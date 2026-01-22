@@ -1,3 +1,4 @@
+import { useAuth } from '@/components/auth-context'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Field,
@@ -6,7 +7,6 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { login } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
@@ -27,6 +27,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<'div'>) {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,13 +38,13 @@ export function LoginForm({
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
-      const response = await login({
+      const user = await login({
         email: data.email,
         password: data.password,
       })
 
       toast.success('Inicio de sesión exitoso', {
-        description: `Bienvenido, tu tipo de cuenta es: ${response.user_type}`,
+        description: `Bienvenido: ${user.firstname}`,
         position: 'bottom-right',
       })
 

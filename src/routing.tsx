@@ -5,23 +5,29 @@ import HomePage from '@/pages/Home'
 import { LoginPage } from '@/pages/Login'
 import NotFoundPage from '@/pages/NotFound'
 import { Route, Routes } from 'react-router'
+import AuthProvider from './components/auth-context'
+import Unauthotized from './pages/Unauthotized'
 
 export default function Routing() {
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<PublicLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="login" element={<LoginPage />} />
-      </Route>
+    <AuthProvider>
+      <Routes>
+        {/* Public Routes */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="login" element={<LoginPage />} />
+        </Route>
 
-      {/* Private Routes */}
-      <Route path="dashboard/" element={<PrivateLayout />}>
-        <Route index element={<DashboardPage />} />
-      </Route>
+        {/* Private Routes */}
+        <Route path="dashboard/" element={<PrivateLayout />}>
+          <Route index element={<DashboardPage />} />
+        </Route>
 
-      {/* Not Found Route */}
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+        {/* Unauthorized Route */}
+        <Route path="/unauthorized" element={<Unauthotized />} />
+        {/* Not Found Route */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </AuthProvider>
   )
 }

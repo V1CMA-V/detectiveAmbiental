@@ -1,9 +1,11 @@
 import { ModeToggle } from '@/components/mode-toggle'
-import { isAuthenticated } from '@/lib/auth'
+import { authService } from '@/lib/auth'
 import { TreeDeciduous } from 'lucide-react'
 import { Link, Navigate, Outlet } from 'react-router'
 
 export default function PublicLayout() {
+  const { isAuthenticated } = authService
+
   if (isAuthenticated()) {
     return <Navigate to="/dashboard" replace />
   }

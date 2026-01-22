@@ -21,6 +21,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { TreeDeciduous } from 'lucide-react'
+import { useAuth } from './auth-context'
 
 const data = {
   user: {
@@ -66,6 +67,10 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, hasConfigPermission, logout } = useAuth()
+
+  console.log('User: ', user)
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -86,11 +91,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain
+          items={data.navMain}
+          hasConfigPermission={hasConfigPermission()}
+        />
         <NavDocuments items={data.documents} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {user && <NavUser user={user} logout={logout} />}
       </SidebarFooter>
     </Sidebar>
   )

@@ -10,53 +10,62 @@ interface LoginResponse {
   user_type: string
 }
 
-export async function categories() {
-  const response = await fetch('http://localhost:4000/api/categories', {
-    method: 'GET',
-  })
-  const data = await response.json()
-  console.log('Data: ', data)
-}
+export const authService = {
+  // Solo guarda el Token
+  getToken: () => localStorage.getItem('token'),
+  setToken: (token: string) => localStorage.setItem('token', token),
+  removeToken: () => localStorage.removeItem('token'),
 
-export const login = async ({
-  email,
-  password,
-}: LoginData): Promise<LoginResponse> => {
-  // Todo: Utilizar env variable para la URL base
+  isAuthenticated: (): boolean => !!localStorage.getItem('token'),
 
-  try {
-    const { data } = await axios.post<LoginResponse>(`api/auth/login`, {
-      email,
-      password,
+  // Login Solo guarda el token
+  login: async ({ email, password }: LoginData): Promise<LoginResponse> => {
+    try {
+      const { data } = await axios.post<LoginResponse>(`api/auth/login`, {
+        email,
+        password,
+      })
+
+      // Verificar que solo usuarios admin puedan iniciar sesión
+      if (data.user_type !== 'admin') {
+        throw new Error('Solo los administradores pueden iniciar sesión')
+      }
+
+      // Guardar el token y tipo de usuario en localStorage
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user_type', data.user_type)
+
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.error || 'Error en el login')
+      }
+      throw new Error('Error en el login')
+    }
+  },
+
+  // Obtener datos del usuario desde el backend
+  fetchUser: async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    const { data } = await axios.get('api/auth/user', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
 
-    // Verificar que solo usuarios admin puedan iniciar sesión
-    if (data.user_type !== 'admin') {
-      throw new Error('Solo los administradores pueden iniciar sesión')
+    if (!data) {
+      throw new Error('Error al obtener los datos del usuario')
     }
-
-    // Guardar el token y tipo de usuario en localStorage
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('user_type', data.user_type)
 
     return data
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.error || 'Error en el login')
-    }
-    throw new Error('Error en el login')
-  }
+  },
+
+  // Cerrar sesión
+  logout: () => {
+    authService.removeToken()
+  },
 }
-
-export const logout = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('user_type')
-}
-
-export const getToken = (): string | null => localStorage.getItem('token')
-
-export const getUserType = (): string | null =>
-  localStorage.getItem('user_type')
-
-export const isAuthenticated = (): boolean => !!getToken()
-export const isAdmin = (): boolean => getUserType() === 'admin'
