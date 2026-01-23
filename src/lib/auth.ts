@@ -83,15 +83,55 @@ export const authService = {
     }
 
     try {
-      console.log(`Current password ${current_password}`)
-      console.log(`New password ${new_password}`)
-      console.log(`Token ${token}`)
-
       const { data } = await axios.post(
         '/api/auth/update-password',
         {
           current_password: current_password,
           new_password: new_password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al actualizar la contraseña',
+        )
+      }
+      throw new Error('Error al actualizar la contraseña')
+    }
+  },
+
+  // Actualizar contraseña del usuario
+  createUserAdmin: async ({
+    firstname,
+    lastname,
+    password,
+    email,
+  }: {
+    firstname: string
+    lastname: string
+    password: string
+    email: string
+  }) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    try {
+      const { data } = await axios.post(
+        '/api/auth/create-account-admin',
+        {
+          firstname: firstname,
+          lastname: lastname,
+          password: password,
+          email: email,
         },
         {
           headers: {
