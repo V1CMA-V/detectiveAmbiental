@@ -21,6 +21,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { TreeDeciduous } from 'lucide-react'
+import { Link } from 'react-router'
 import { useAuth } from './auth-context'
 
 const data = {
@@ -32,17 +33,17 @@ const data = {
   navMain: [
     {
       title: 'Reportes',
-      url: '#',
+      url: '',
       icon: IconDashboard,
     },
     {
       title: 'Mapa',
-      url: '#',
+      url: 'map',
       icon: IconMap,
     },
     {
       title: 'Usuarios',
-      url: '#',
+      url: 'users',
       icon: IconUsers,
     },
   ],
@@ -80,12 +81,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link to="/dashboard">
                 <TreeDeciduous className="h-8 w-8 text-green-600" />
                 <span className="text-base font-semibold">
                   Detective Ambiental
                 </span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

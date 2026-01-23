@@ -30,6 +30,7 @@ export function NavUser({
   user: {
     id_user: number
     firstname: string
+    lastname: string
     email: string
     user_type: string
     active: boolean
@@ -45,6 +46,9 @@ export function NavUser({
     navigate('/')
   }
 
+  const avataLetters = `${user.firstname.charAt(0)}${user.lastname.charAt(0)}`
+  console.log('AvatarLetters: ', avataLetters)
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -55,10 +59,12 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {avataLetters}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.firstname}</span>
+                <span className="truncate font-medium">{`${user.firstname} ${user.lastname}`}</span>
                 <span className="text-muted-foreground truncate text-xs">
                   {user.email}
                 </span>
@@ -75,12 +81,14 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {avataLetters}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <div className="flex items-center justify-between">
                     <span className="truncate font-medium">
-                      {user.firstname}
+                      {`${user.firstname} ${user.lastname}`}
                     </span>
                     <Badge variant={'outline'}>{user.user_type}</Badge>
                   </div>
@@ -100,7 +108,11 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logoutHandler} variant="destructive">
+            <DropdownMenuItem
+              onClick={logoutHandler}
+              className="cursor-pointer"
+              variant="destructive"
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>

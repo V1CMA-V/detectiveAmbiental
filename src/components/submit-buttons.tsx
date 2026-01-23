@@ -21,3 +21,20 @@ export function LogginButton({ isSubmitting }: LogginButtonProps) {
     </>
   )
 }
+
+export function UpdatePasswordButton({ isSubmitting }: LogginButtonProps) {
+  return (
+    <>
+      {isSubmitting ? (
+        <Button disabled className="w-fit">
+          <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+          Actualizando...
+        </Button>
+      ) : (
+        <Button className="w-fit" type="submit">
+          Actualizar Contraseña
+        </Button>
+      )}
+    </>
+  )
+}

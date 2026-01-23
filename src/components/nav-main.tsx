@@ -8,6 +8,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { UserPlus2 } from 'lucide-react'
+import { Link } from 'react-router'
 
 export function NavMain({
   hasConfigPermission,
@@ -39,9 +40,11 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
+              <SidebarMenuButton tooltip={item.title} asChild>
+                <Link to={`/dashboard/${item.url}`}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

@@ -21,7 +21,7 @@ export const authService = {
   // Login Solo guarda el token
   login: async ({ email, password }: LoginData): Promise<LoginResponse> => {
     try {
-      const { data } = await axios.post<LoginResponse>(`api/auth/login`, {
+      const { data } = await axios.post<LoginResponse>(`/api/auth/login`, {
         email,
         password,
       })
@@ -51,7 +51,7 @@ export const authService = {
       throw new Error('No autenticado')
     }
 
-    const { data } = await axios.get('api/auth/user', {
+    const { data } = await axios.get('/api/auth/user', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -67,5 +67,47 @@ export const authService = {
   // Cerrar sesión
   logout: () => {
     authService.removeToken()
+  },
+
+  // Actualizar contraseña del usuario
+  updatePassword: async ({
+    current_password,
+    new_password,
+  }: {
+    current_password: string
+    new_password: string
+  }) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    try {
+      console.log(`Current password ${current_password}`)
+      console.log(`New password ${new_password}`)
+      console.log(`Token ${token}`)
+
+      const { data } = await axios.post(
+        '/api/auth/update-password',
+        {
+          current_password: current_password,
+          new_password: new_password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al actualizar la contraseña',
+        )
+      }
+      throw new Error('Error al actualizar la contraseña')
+    }
   },
 }

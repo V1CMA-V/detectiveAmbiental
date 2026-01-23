@@ -6,6 +6,7 @@ import { LoginPage } from '@/pages/Login'
 import NotFoundPage from '@/pages/NotFound'
 import { Route, Routes } from 'react-router'
 import AuthProvider from './components/auth-context'
+import ProfilePage from './pages/dashboard/profile/Page'
 import Unauthotized from './pages/Unauthotized'
 
 export default function Routing() {
@@ -21,6 +22,7 @@ export default function Routing() {
         {/* Private Routes */}
         <Route path="dashboard/" element={<PrivateLayout />}>
           <Route index element={<DashboardPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
 
         {/* Unauthorized Route */}
