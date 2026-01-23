@@ -168,4 +168,54 @@ export const authService = {
       throw new Error('Error al validar la cuenta')
     }
   },
+
+  forgotPassword: async (email: string) => {
+    try {
+      const { data } = await axios.post('/api/auth/forgot-password', {
+        email: email,
+      })
+
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al enviar el correo',
+        )
+      }
+      throw new Error('Error al enviar el correoS')
+    }
+  },
+
+  validateToken: async (token: string) => {
+    try {
+      const { data } = await axios.post('/api/auth/validate-token', {
+        token: token,
+      })
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Token inválido o expirado',
+        )
+      }
+      throw new Error('Token inválido o expirado')
+    }
+  },
+
+  resetPassword: async (token: string, newPassword: string) => {
+    try {
+      const { data } = await axios.post(`/api/auth/reset-password/${token}`, {
+        password: newPassword,
+      })
+
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al restablecer la contraseña',
+        )
+      }
+      throw new Error('Error al restablecer la contraseña')
+    }
+  },
 }

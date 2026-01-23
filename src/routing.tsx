@@ -7,6 +7,8 @@ import NotFoundPage from '@/pages/NotFound'
 import { Route, Routes } from 'react-router'
 import AuthProvider from './components/auth-context'
 import ProfilePage from './pages/dashboard/profile/Page'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import Unauthotized from './pages/Unauthotized'
 import ValidateAccount from './pages/ValidateAccoutn'
 
@@ -19,6 +21,8 @@ export default function Routing() {
           <Route path="/" element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="validate-account" element={<ValidateAccount />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
         </Route>
 
         {/* Private Routes */}
