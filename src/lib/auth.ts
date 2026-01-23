@@ -144,10 +144,28 @@ export const authService = {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(
-          error.response?.data?.error || 'Error al actualizar la contraseña',
+          error.response?.data?.error ||
+            'Error al crear el usuario administrador',
         )
       }
-      throw new Error('Error al actualizar la contraseña')
+      throw new Error('Error al crear el usuario administrador')
+    }
+  },
+
+  validateAccount: async (otp: string) => {
+    try {
+      const { data } = await axios.post('/api/auth/confirm-account', {
+        token: otp,
+      })
+
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al validar la cuenta',
+        )
+      }
+      throw new Error('Error al validar la cuenta')
     }
   },
 }

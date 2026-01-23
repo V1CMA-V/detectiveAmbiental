@@ -8,6 +8,7 @@ import { Route, Routes } from 'react-router'
 import AuthProvider from './components/auth-context'
 import ProfilePage from './pages/dashboard/profile/Page'
 import Unauthotized from './pages/Unauthotized'
+import ValidateAccount from './pages/ValidateAccoutn'
 
 export default function Routing() {
   return (
@@ -17,6 +18,7 @@ export default function Routing() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
+          <Route path="validate-account" element={<ValidateAccount />} />
         </Route>
 
         {/* Private Routes */}

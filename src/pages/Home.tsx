@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { TreeDeciduous, User } from 'lucide-react'
+import { TreeDeciduous, User, UserCheck2Icon } from 'lucide-react'
 import { Link } from 'react-router'
 
 export default function HomePage() {
@@ -52,6 +52,16 @@ export default function HomePage() {
                   >
                     <User className="w-5 h-5" />
                     Iniciar Sesión
+                  </Button>
+                </Link>
+                <Link to="/validate-account">
+                  <Button
+                    variant={'outline'}
+                    size="lg"
+                    className="text-lg flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  >
+                    <UserCheck2Icon className="w-5 h-5" />
+                    Validar Cuenta
                   </Button>
                 </Link>
 
