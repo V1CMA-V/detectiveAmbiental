@@ -1,3 +1,4 @@
+import type { Report } from '@/types/report'
 import axios from 'axios'
 
 interface LoginData {
@@ -31,9 +32,8 @@ export const authService = {
         throw new Error('Solo los administradores pueden iniciar sesión')
       }
 
-      // Guardar el token y tipo de usuario en localStorage
+      // Guardar el token y en localStorage
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user_type', data.user_type)
 
       return data
     } catch (error) {
@@ -216,6 +216,35 @@ export const authService = {
         )
       }
       throw new Error('Error al restablecer la contraseña')
+    }
+  },
+
+  getAllReports: async (): Promise<Report[]> => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.get<Report[]>('/api/reports-admin', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      console.log('Data authService:', data)
+
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          'Error en getAllReports:',
+          error.response?.data || error.message,
+        )
+        throw new Error(
+          error.response?.data?.error || 'Error al obtener los reportes',
+        )
+      }
+      throw new Error('Error al obtener los reportes')
     }
   },
 }

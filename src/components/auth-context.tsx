@@ -49,7 +49,7 @@ export default function AuthProvider({
 
   // Funciones helper para verificar permisos
   const hasConfigPermission = () => {
-    return user?.user_type === 'admin' && user?.permission_config === true
+    return user?.permission_config === true
   }
 
   return (
