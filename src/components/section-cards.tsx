@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import type { Report } from '@/types/report'
-import { BadgeCheck, ToolCase } from 'lucide-react'
+import { ChartLine, CheckCircle2, Info, SquareActivity } from 'lucide-react'
 
 export function SectionCards({ reports }: { reports: Report[] }) {
   // Calcular los totales
@@ -84,7 +84,7 @@ export function SectionCards({ reports }: { reports: Report[] }) {
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
             Reportes registrados en el sistema
-            <BadgeCheck className="size-4" />
+            <ChartLine className="size-4" />
           </div>
           <div className="text-muted-foreground">
             Todos los reportes hasta la fecha
@@ -100,7 +100,7 @@ export function SectionCards({ reports }: { reports: Report[] }) {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Requieren atencion <IconTrendingDown className="size-4" />
+            Requieren atencion <Info className="size-4" />
           </div>
           <div className="text-muted-foreground">Reportes sin resolver aún</div>
         </CardFooter>
@@ -114,7 +114,7 @@ export function SectionCards({ reports }: { reports: Report[] }) {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Reportes en proceso <ToolCase className="size-4" />
+            Reportes en proceso <SquareActivity className="size-4" />
           </div>
           <div className="text-muted-foreground">
             Atendidos por mantenimiento
@@ -136,7 +136,7 @@ export function SectionCards({ reports }: { reports: Report[] }) {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Reportes resueltos <IconTrendingUp className="size-4" />
+            Reportes resueltos <CheckCircle2 className="size-4" />
           </div>
           <div className="text-muted-foreground">
             Solucionados Correctamente

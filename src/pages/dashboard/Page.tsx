@@ -41,7 +41,7 @@ export default function Page() {
     <>
       <SectionCards reports={reports} />
       <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
+        <ChartAreaInteractive reports={reports} />
       </div>
       <DataTable data={reports} categories={categories} />
     </>
