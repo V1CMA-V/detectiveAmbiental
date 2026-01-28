@@ -11,6 +11,16 @@ export interface User {
   updatedAt?: string
 }
 
+export interface UserAdmin {
+  id_user: number
+  firstname: string
+  lastname: string
+  email: string
+  user_type: string
+  active: boolean
+  permission_config: boolean
+}
+
 export interface LoginCredentials {
   email: string
   password: string

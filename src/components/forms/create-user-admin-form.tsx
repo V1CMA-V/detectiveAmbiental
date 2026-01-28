@@ -14,12 +14,8 @@ import z from 'zod'
 import { CreateUserAdminButton } from '../submit-buttons'
 
 const formSchema = z.object({
-  firstname: z
-    .string()
-    .min(8, 'La contraseña actual debe tener al menos 8 caracteres.'),
-  lastname: z
-    .string()
-    .min(8, 'La nueva contraseña debe tener al menos 8 caracteres.'),
+  firstname: z.string(),
+  lastname: z.string(),
   password: z
     .string()
     .min(8, 'La nueva contraseña debe tener al menos 8 caracteres.'),

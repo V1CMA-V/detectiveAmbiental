@@ -4,7 +4,6 @@ import {
   IconFileWord,
   IconMap,
   IconReport,
-  IconUsers,
 } from '@tabler/icons-react'
 import * as React from 'react'
 
@@ -40,11 +39,6 @@ const data = {
       title: 'Mapa',
       url: 'map',
       icon: IconMap,
-    },
-    {
-      title: 'Usuarios',
-      url: 'users',
-      icon: IconUsers,
     },
   ],
 

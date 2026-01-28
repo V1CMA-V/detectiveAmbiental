@@ -98,8 +98,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useIsMobile } from '@/hooks/use-mobile'
 import type { Category } from '@/types/category'
 import type { Report } from '@/types/report'
+import type { UserAdmin } from '@/types/user'
 import AddCategory from './add-category'
+import { useAuth } from './auth-context'
 import CategoriesTable from './categories-table'
+import UserTab from './user-tab'
 
 // Create a separate component for the drag handle
 function DragHandle({ id }: { id: number }) {
@@ -162,7 +165,7 @@ const columns: ColumnDef<Report>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'type',
+    accessorKey: 'categoria',
     header: 'Categoria',
     cell: ({ row }) => (
       <div className="w-32">
@@ -173,7 +176,7 @@ const columns: ColumnDef<Report>[] = [
     ),
   },
   {
-    accessorKey: 'status',
+    accessorKey: 'estatus',
     header: 'Estatus',
     cell: ({ row }) => {
       const status = row.original.status.status
@@ -192,20 +195,20 @@ const columns: ColumnDef<Report>[] = [
     },
   },
   {
-    accessorKey: 'target',
+    accessorKey: 'fecha',
     header: 'Fecha de creación',
     cell: ({ row }) => (
       <p>{new Date(row.original.date).toLocaleDateString('es-MX')}</p>
     ),
   },
   {
-    accessorKey: 'limit',
+    accessorKey: 'titulo',
     header: 'Titulo',
     cell: ({ row }) => <p>{row.original.title}</p>,
   },
   {
-    accessorKey: 'reviewer',
-    header: 'Email del usuario',
+    accessorKey: 'correo',
+    header: 'Correo del usuario',
     cell: ({ row }) => <p>{row.original.user.email}</p>,
   },
   {
@@ -262,9 +265,11 @@ function DraggableRow({ row }: { row: Row<Report> }) {
 export function DataTable({
   data: initialData,
   categories,
+  usersAdmin = [],
 }: {
   data: Report[]
   categories?: Category[]
+  usersAdmin?: UserAdmin[]
 }) {
   const [data, setData] = React.useState(() => initialData)
   const [rowSelection, setRowSelection] = React.useState({})
@@ -326,6 +331,10 @@ export function DataTable({
     }
   }
 
+  const { hasConfigPermission } = useAuth()
+
+  const isConfigPermission = hasConfigPermission()
+
   return (
     <Tabs
       defaultValue="reports"
@@ -346,6 +355,11 @@ export function DataTable({
           <SelectContent>
             <SelectItem value="reports">Reportes</SelectItem>
             <SelectItem value="categories">Categorías</SelectItem>
+
+            {isConfigPermission && (
+              <SelectItem value="users">Usuarios</SelectItem>
+            )}
+
             <SelectItem value="past-performance">
               Mas tablas en el futuro
             </SelectItem>
@@ -358,8 +372,12 @@ export function DataTable({
             <Badge variant={'secondary'}>{categories?.length || 0}</Badge>
           </TabsTrigger>
 
+          {isConfigPermission && (
+            <TabsTrigger value="users">Usuarios</TabsTrigger>
+          )}
+
           <TabsTrigger value="past-performance">
-            Mas tablas en el futuro <Badge variant="secondary">3</Badge>
+            Posibles tablas en el futuro
           </TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
@@ -536,6 +554,13 @@ export function DataTable({
       <TabsContent value="categories">
         <CategoriesTable data={categories} />
       </TabsContent>
+
+      {isConfigPermission && (
+        <TabsContent value="users">
+          <UserTab usersAdmin={usersAdmin} />
+        </TabsContent>
+      )}
+
       <TabsContent
         value="past-performance"
         className="flex flex-col px-4 lg:px-6"

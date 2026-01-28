@@ -323,4 +323,85 @@ export const authService = {
       throw new Error('Error al eliminar la categoría')
     }
   },
+
+  // Get Admin Users for Table
+  getAdminUsers: async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    try {
+      const { data } = await axios.get('/api/auth/usersAdmin', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al obtener los usuarios administradores',
+        )
+      }
+      throw new Error('Error al obtener los usuarios administradores')
+    }
+  },
+
+  // Deactivate User Admin
+  deactivateUserAdmin: async (id_user: number) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.put(
+        `/api/auth/${id_user}/deactivate`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al desactivar el usuario administrador',
+        )
+      }
+      throw new Error('Error al desactivar el usuario administrador')
+    }
+  },
+
+  // Reactivate User Admin
+  reactivateUserAdmin: async (id_user: number) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.put(
+        `/api/auth/${id_user}/reactivate`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al reactivar el usuario administrador',
+        )
+      }
+      throw new Error('Error al reactivar el usuario administrador')
+    }
+  },
 }
