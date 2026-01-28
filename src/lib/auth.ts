@@ -247,4 +247,80 @@ export const authService = {
       throw new Error('Error al obtener los reportes')
     }
   },
+
+  // Categories
+  addCategory: async (category: string) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.post('/api/categories', { category })
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al agregar la categoría',
+        )
+      }
+      throw new Error('Error al agregar la categoría')
+    }
+  },
+
+  getAllCategories: async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.get('/api/categories')
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al obtener las categorías',
+        )
+      }
+      throw new Error('Error al obtener las categorías')
+    }
+  },
+
+  updateCategory: async (id_category: number, category: string) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    try {
+      const { data } = await axios.put(`/api/categories/${id_category}`, {
+        category,
+      })
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al actualizar la categoría',
+        )
+      }
+      throw new Error('Error al actualizar la categoría')
+    }
+  },
+
+  deleteCategory: async (id_category: number) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.delete(`/api/categories/${id_category}`)
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al eliminar la categoría',
+        )
+      }
+      throw new Error('Error al eliminar la categoría')
+    }
+  },
 }

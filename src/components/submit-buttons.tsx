@@ -55,3 +55,19 @@ export function CreateUserAdminButton({ isSubmitting }: ButtonProps) {
     </>
   )
 }
+export function CreateCategoryButton({ isSubmitting }: ButtonProps) {
+  return (
+    <>
+      {isSubmitting ? (
+        <Button disabled className="w-fit">
+          <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+          Creando...
+        </Button>
+      ) : (
+        <Button className="w-fit" type="submit">
+          Crear Nueva Categoría
+        </Button>
+      )}
+    </>
+  )
+}

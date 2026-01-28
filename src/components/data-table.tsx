@@ -29,7 +29,6 @@ import {
   IconEye,
   IconGripVertical,
   IconLayoutColumns,
-  IconPlus,
   IconTrendingUp,
 } from '@tabler/icons-react'
 import {
@@ -97,7 +96,10 @@ import {
 } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useIsMobile } from '@/hooks/use-mobile'
+import type { Category } from '@/types/category'
 import type { Report } from '@/types/report'
+import AddCategory from './add-category'
+import CategoriesTable from './categories-table'
 
 // Create a separate component for the drag handle
 function DragHandle({ id }: { id: number }) {
@@ -257,7 +259,13 @@ function DraggableRow({ row }: { row: Row<Report> }) {
   )
 }
 
-export function DataTable({ data: initialData }: { data: Report[] }) {
+export function DataTable({
+  data: initialData,
+  categories,
+}: {
+  data: Report[]
+  categories?: Category[]
+}) {
   const [data, setData] = React.useState(() => initialData)
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -337,6 +345,7 @@ export function DataTable({ data: initialData }: { data: Report[] }) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="reports">Reportes</SelectItem>
+            <SelectItem value="categories">Categorías</SelectItem>
             <SelectItem value="past-performance">
               Mas tablas en el futuro
             </SelectItem>
@@ -344,6 +353,11 @@ export function DataTable({ data: initialData }: { data: Report[] }) {
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
           <TabsTrigger value="reports">Reportes</TabsTrigger>
+          <TabsTrigger value="categories">
+            Categorías{' '}
+            <Badge variant={'secondary'}>{categories?.length || 0}</Badge>
+          </TabsTrigger>
+
           <TabsTrigger value="past-performance">
             Mas tablas en el futuro <Badge variant="secondary">3</Badge>
           </TabsTrigger>
@@ -382,10 +396,8 @@ export function DataTable({ data: initialData }: { data: Report[] }) {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm">
-            <IconPlus />
-            <span className="hidden lg:inline">Agregar Categoria</span>
-          </Button>
+          {/* Add category */}
+          <AddCategory />
         </div>
       </div>
       <TabsContent
@@ -520,6 +532,9 @@ export function DataTable({ data: initialData }: { data: Report[] }) {
             </div>
           </div>
         </div>
+      </TabsContent>
+      <TabsContent value="categories">
+        <CategoriesTable data={categories} />
       </TabsContent>
       <TabsContent
         value="past-performance"

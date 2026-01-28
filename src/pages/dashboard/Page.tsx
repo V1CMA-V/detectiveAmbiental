@@ -2,11 +2,13 @@ import { ChartAreaInteractive } from '@/components/chart-area-interactive'
 import { DataTable } from '@/components/data-table'
 import { SectionCards } from '@/components/section-cards'
 import { authService } from '@/lib/auth'
+import type { Category } from '@/types/category'
 import type { Report } from '@/types/report'
 import { useEffect, useState } from 'react'
 
 export default function Page() {
   const [reports, setReports] = useState<Report[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -15,7 +17,12 @@ export default function Page() {
         setLoading(true)
         const data = await authService.getAllReports()
         console.log('Reports fetched:', data)
+
+        const categories = await authService.getAllCategories()
+        console.log('Categories fetched:', categories)
+
         setReports(data)
+        setCategories(categories)
       } catch (error) {
         console.error('Error fetching reports:', error)
       } finally {
@@ -36,7 +43,7 @@ export default function Page() {
       <div className="px-4 lg:px-6">
         <ChartAreaInteractive />
       </div>
-      <DataTable data={reports} />
+      <DataTable data={reports} categories={categories} />
     </>
   )
 }
