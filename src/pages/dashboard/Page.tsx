@@ -39,7 +39,7 @@ export default function Page() {
 
   return (
     <>
-      <SectionCards />
+      <SectionCards reports={reports} />
       <div className="px-4 lg:px-6">
         <ChartAreaInteractive />
       </div>

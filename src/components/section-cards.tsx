@@ -1,6 +1,6 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react'
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardAction,
@@ -8,93 +8,139 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card'
+import type { Report } from '@/types/report'
+import { BadgeCheck, ToolCase } from 'lucide-react'
 
-export function SectionCards() {
+export function SectionCards({ reports }: { reports: Report[] }) {
+  // Calcular los totales
+  const totalReports = reports.length
+  const totalPendingReports = reports.filter(
+    (report) => report.status.status === 'pending',
+  ).length
+  const totalInProcessReports = reports.filter(
+    (report) => report.status.status === '',
+  ).length
+  const totalResolvedReports = reports.filter(
+    (report) => report.status.status === 'resolved',
+  ).length
+
+  // Calcular reportes del mes actual y mes anterior
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
+
+  const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1
+  const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear
+
+  const reportsThisMonth = reports.filter((report) => {
+    const reportDate = new Date(report.date)
+    return (
+      reportDate.getMonth() === currentMonth &&
+      reportDate.getFullYear() === currentYear
+    )
+  }).length
+
+  const reportsLastMonth = reports.filter((report) => {
+    const reportDate = new Date(report.date)
+    return (
+      reportDate.getMonth() === lastMonth &&
+      reportDate.getFullYear() === lastMonthYear
+    )
+  }).length
+
+  // Calcular porcentaje de cambio
+  const monthOverMonthChange = reportsLastMonth
+    ? (
+        ((reportsThisMonth - reportsLastMonth) / reportsLastMonth) *
+        100
+      ).toFixed(1)
+    : reportsThisMonth > 0
+      ? '100'
+      : '0'
+
+  const isPositiveChange = Number(monthOverMonthChange) >= 0
+
+  const comparedResolvedToTotal = totalReports
+    ? ((totalResolvedReports / totalReports) * 100).toFixed(1)
+    : '0'
+
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
+          <CardDescription>Total de Reportes</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+            {totalReports}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
+              {isPositiveChange ? <IconTrendingUp /> : <IconTrendingDown />}
+              {isPositiveChange ? '+' : ''}
+              {monthOverMonthChange}% este mes
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <IconTrendingUp className="size-4" />
+            Reportes registrados en el sistema
+            <BadgeCheck className="size-4" />
           </div>
           <div className="text-muted-foreground">
-            Visitors for the last 6 months
+            Todos los reportes hasta la fecha
           </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
+          <CardDescription>Pendientes</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
+            {totalPendingReports}
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown />
-              -20%
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period <IconTrendingDown className="size-4" />
+            Requieren atencion <IconTrendingDown className="size-4" />
+          </div>
+          <div className="text-muted-foreground">Reportes sin resolver aún</div>
+        </CardFooter>
+      </Card>
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>En Proceso</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            {totalInProcessReports}
+          </CardTitle>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Reportes en proceso <ToolCase className="size-4" />
           </div>
           <div className="text-muted-foreground">
-            Acquisition needs attention
+            Atendidos por mantenimiento
           </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
+          <CardDescription>Resueltos</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
+            {totalResolvedReports}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
+              {/* Porcentaje con respecto al total de reportes y solucionados  */}
+              <IconTrendingUp />+{comparedResolvedToTotal}% del total
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <IconTrendingUp className="size-4" />
+            Reportes resueltos <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
-        </CardFooter>
-      </Card>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +4.5%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase <IconTrendingUp className="size-4" />
+          <div className="text-muted-foreground">
+            Solucionados Correctamente
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
         </CardFooter>
       </Card>
     </div>
