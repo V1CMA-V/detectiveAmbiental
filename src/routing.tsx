@@ -8,6 +8,7 @@ import { Route, Routes } from 'react-router'
 import AuthProvider from './components/auth-context'
 import ProfilePage from './pages/dashboard/profile/Page'
 import ForgotPassword from './pages/ForgotPassword'
+import InactiveAccount from './pages/InactiveAccount'
 import ResetPassword from './pages/ResetPassword'
 import Unauthotized from './pages/Unauthotized'
 import ValidateAccount from './pages/ValidateAccoutn'
@@ -30,6 +31,9 @@ export default function Routing() {
           <Route index element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
+
+        {/* Inactive Account Route */}
+        <Route path="/inactive-account" element={<InactiveAccount />} />
 
         {/* Unauthorized Route */}
         <Route path="/unauthorized" element={<Unauthotized />} />

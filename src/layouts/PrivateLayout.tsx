@@ -1,4 +1,5 @@
 import { AppSidebar } from '@/components/app-sidebar'
+import { useAuth } from '@/components/auth-context'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { authService } from '@/lib/auth'
@@ -7,8 +8,14 @@ import { Navigate, Outlet } from 'react-router'
 export default function PrivateLayout() {
   const { isAuthenticated } = authService
 
+  const { user } = useAuth()
+
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />
+  }
+
+  if (user?.active === false) {
+    return <Navigate to="/inactive-account" replace />
   }
 
   return (
