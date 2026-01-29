@@ -449,4 +449,81 @@ export const authService = {
       throw new Error('Error al enviar la revisión del reporte')
     }
   },
+
+  // Upload Image to Cloudinary
+  uploadImageCloudinary: async (files: File[]) => {
+    const uploadedImages = []
+    try {
+      for (const file of files) {
+        const formData = new FormData()
+        formData.append('image', file)
+
+        console.log('Uploading file:', file.name)
+
+        const { data } = await axios.post('/api/upload', formData)
+        // ⬆️ Sin el header Content-Type
+
+        console.log('Uploaded image data:', data)
+
+        uploadedImages.push({
+          url_image: data.url,
+          public_id: data.public_id,
+        })
+      }
+
+      return uploadedImages
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.message ||
+            error.response?.data?.error ||
+            'Error al subir las imágenes a Cloudinary',
+        )
+      }
+      throw new Error('Error al subir las imágenes a Cloudinary')
+    }
+  },
+
+  createReview: async ({
+    public_id_report,
+    review_notes,
+    images,
+  }: {
+    public_id_report: string
+    review_notes: string
+    images: File[]
+  }) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    try {
+      // Primero subir las imágenes a Cloudinary
+      const uploadedImages = await authService.uploadImageCloudinary(images)
+      // Luego crear la revisión del reporte con las imágenes subidas
+      const reviewResponse = await axios.post(
+        '/api/review/cloudinary',
+        {
+          report_public_id: public_id_report,
+          comment: review_notes,
+          images: uploadedImages,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      return reviewResponse.data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al enviar la revisión del reporte con imágenes',
+        )
+      }
+      throw new Error('Error al enviar la revisión del reporte con imágenes')
+    }
+  },
 }

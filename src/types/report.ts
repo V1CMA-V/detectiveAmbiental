@@ -21,13 +21,16 @@ export interface Report {
 
 export interface ReportReview {
   id_review: number
+  public_id: string
   comment: string
+  id_report: number
+  id_user: number
   user: {
     firstname: string
     lastname: string
   }
-  images: {
+  reviewImages: {
     id_image: number
-    url_image: string
+    url: string
   }[]
 }

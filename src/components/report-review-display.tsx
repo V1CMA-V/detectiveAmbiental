@@ -23,19 +23,19 @@ export default function ReportReviewDisplay({
           </p>
         </div>
       </div>
-      {reportReview.images && reportReview.images.length > 0 && (
+      {reportReview.reviewImages && reportReview.reviewImages.length > 0 && (
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium text-foreground">
             Imágenes de la revisión:
           </p>
           <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
-            {reportReview.images.map((image) => (
+            {reportReview.reviewImages.map((image) => (
               <div
                 key={image.id_image}
                 className="aspect-square overflow-hidden rounded-lg border"
               >
                 <img
-                  src={image.url_image}
+                  src={image.url}
                   alt={`Imagen de revisión ${image.id_image}`}
                   className="size-full object-cover"
                 />

@@ -32,7 +32,7 @@ export default function AddReportReviewForm({
 
     setIsSubmitting(true)
     try {
-      await authService.newReportReview({
+      await authService.createReview({
         public_id_report,
         review_notes: reviewNotes,
         images,
