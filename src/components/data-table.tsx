@@ -29,7 +29,6 @@ import {
   IconEye,
   IconGripVertical,
   IconLayoutColumns,
-  IconTrendingUp,
 } from '@tabler/icons-react'
 import {
   flexRender,
@@ -47,16 +46,9 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import * as React from 'react'
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from '@/components/ui/chart'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Drawer,
@@ -76,7 +68,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -102,6 +93,7 @@ import type { UserAdmin } from '@/types/user'
 import AddCategory from './add-category'
 import { useAuth } from './auth-context'
 import CategoriesTable from './categories-table'
+import AddReportReviewForm from './forms/add-report-review-form'
 import UserTab from './user-tab'
 
 // Create a separate component for the drag handle
@@ -580,28 +572,10 @@ export function DataTable({
   )
 }
 
-const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
-]
-
-const chartConfig = {
-  desktop: {
-    label: 'Desktop',
-    color: 'var(--primary)',
-  },
-  mobile: {
-    label: 'Mobile',
-    color: 'var(--primary)',
-  },
-} satisfies ChartConfig
-
 function TableCellViewer({ item }: { item: Report }) {
   const isMobile = useIsMobile()
+
+  const textDate = new Date(item.date).toLocaleDateString('es-MX')
 
   return (
     <Drawer direction={isMobile ? 'bottom' : 'right'}>
@@ -618,94 +592,50 @@ function TableCellViewer({ item }: { item: Report }) {
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
           {!isMobile && (
             <>
-              <ChartContainer config={chartConfig}>
-                <AreaChart
-                  accessibilityLayer
-                  data={chartData}
-                  margin={{
-                    left: 0,
-                    right: 10,
-                  }}
-                >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={(value) => value.slice(0, 3)}
-                    hide
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="dot" />}
-                  />
-                  <Area
-                    dataKey="mobile"
-                    type="natural"
-                    fill="var(--color-mobile)"
-                    fillOpacity={0.6}
-                    stroke="var(--color-mobile)"
-                    stackId="a"
-                  />
-                  <Area
-                    dataKey="desktop"
-                    type="natural"
-                    fill="var(--color-desktop)"
-                    fillOpacity={0.4}
-                    stroke="var(--color-desktop)"
-                    stackId="a"
-                  />
-                </AreaChart>
-              </ChartContainer>
-              <Separator />
-              <div className="grid gap-2">
-                <div className="flex gap-2 leading-none font-medium">
-                  Trending up by 5.2% this month{' '}
-                  <IconTrendingUp className="size-4" />
-                </div>
-                <div className="text-muted-foreground">
-                  Showing total visitors for the last 6 months. This is just
-                  some random text to test the layout. It spans multiple lines
-                  and should wrap around.
-                </div>
-              </div>
+              {/* Images for Reports */}
+              <div className="bg-black aspect-square rounded-2xl"></div>
               <Separator />
             </>
           )}
           <form className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="header">Titulo</Label>
-              <Input id="header" defaultValue={item.title} />
+            <h4 className="flex flex-col gap-3 text-xl text-foreground font-medium ">
+              <span className="text-sm text-muted-foreground font-normal">
+                Titulo
+              </span>
+              {item.title}
+            </h4>
+            <div className="grid grid-cols-2 gap-4">
+              <p className="text-sm text-muted-foreground ">
+                Fecha <br />
+                <span className="text-lg text-foreground">{textDate}</span>
+              </p>
+              <p className="text-sm text-muted-foreground ">
+                Email <br />
+                <span className="text-lg text-foreground">
+                  {item.user.email}
+                </span>
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="type">Categoria</Label>
+                {/* TODO: Pendiente a mostrar todas las categorias en caso de que si se requiera modificar la categoria */}
+                <Label htmlFor="category">Categoria</Label>
                 <Select defaultValue={item.categories.category}>
-                  <SelectTrigger id="type" className="w-full">
-                    <SelectValue placeholder="Select a type" />
+                  <SelectTrigger id="category" className="w-full">
+                    <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Table of Contents">
-                      Table of Contents
+                    <SelectItem value={item.categories.category}>
+                      {item.categories.category}
                     </SelectItem>
                     <SelectItem value="Executive Summary">
-                      Executive Summary
+                      Mas categorias
                     </SelectItem>
-                    <SelectItem value="Technical Approach">
-                      Technical Approach
-                    </SelectItem>
-                    <SelectItem value="Design">Design</SelectItem>
-                    <SelectItem value="Capabilities">Capabilities</SelectItem>
-                    <SelectItem value="Focus Documents">
-                      Focus Documents
-                    </SelectItem>
-                    <SelectItem value="Narrative">Narrative</SelectItem>
-                    <SelectItem value="Cover Page">Cover Page</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex flex-col gap-3">
+                {/* TODO: Pendiente a cargar los demas estatus del reporte para ir modificando a como se avance en el reporte */}
                 <Label htmlFor="status">Estatus</Label>
                 <Select defaultValue={item.status.status}>
                   <SelectTrigger id="status" className="w-full">
@@ -713,41 +643,33 @@ function TableCellViewer({ item }: { item: Report }) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Done">Done</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value={item.status.status}>
+                      {item.status.status}
+                    </SelectItem>
                     <SelectItem value="Not Started">Not Started</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="target">Fecha</Label>
-                <Input id="target" defaultValue={item.date} />
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="limit">Usuario</Label>
-                <Input id="limit" defaultValue={item.user.email} />
-              </div>
-            </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="reviewer">Folio</Label>
-              <Select defaultValue={item.folio}>
-                <SelectTrigger id="reviewer" className="w-full">
-                  <SelectValue placeholder="Select a reviewer" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Eddie Lake">Eddie Lake</SelectItem>
-                  <SelectItem value="Jamik Tashpulatov">
-                    Jamik Tashpulatov
-                  </SelectItem>
-                  <SelectItem value="Emily Whalen">Emily Whalen</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Button type="submit">Submit</Button>
           </form>
+          <Separator />
+
+          {/* Admin report-review */}
+          <div>
+            <h3 className="text-lg font-medium text-foreground mb-4">
+              Revisión del reporte
+            </h3>
+
+            {/* Mostrar revisión del reporte si existe */}
+
+            {}
+            {/* Crear reporte si no hay uno asignado */}
+            <AddReportReviewForm public_id_report={item.public_id} />
+          </div>
         </div>
+
         <DrawerFooter>
-          <Button>Submit</Button>
           <DrawerClose asChild>
             <Button variant="outline">Done</Button>
           </DrawerClose>

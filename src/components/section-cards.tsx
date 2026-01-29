@@ -16,10 +16,10 @@ export function SectionCards({ reports }: { reports: Report[] }) {
   // Calcular los totales
   const totalReports = reports.length
   const totalPendingReports = reports.filter(
-    (report) => report.status.status === 'pending',
+    (report) => report.status.status === 'Pendiente',
   ).length
   const totalInProcessReports = reports.filter(
-    (report) => report.status.status === '',
+    (report) => report.status.status === 'En Proceso',
   ).length
   const totalResolvedReports = reports.filter(
     (report) => report.status.status === 'resolved',

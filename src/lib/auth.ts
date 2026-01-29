@@ -404,4 +404,69 @@ export const authService = {
       throw new Error('Error al reactivar el usuario administrador')
     }
   },
+
+  // Report Review Submission
+  newReportReview: async ({
+    public_id_report,
+    review_notes,
+    images,
+  }: {
+    public_id_report: string
+    review_notes: string
+    images: File[]
+  }) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    try {
+      const formData = new FormData()
+
+      formData.append('report_public_id', public_id_report)
+      formData.append('comment', review_notes)
+
+      if (images && images.length > 0) {
+        images.forEach((image) => {
+          formData.append('images[]', image)
+        })
+      }
+
+      const response = await axios.post('/api/review', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Axios establece automáticamente Content-Type para FormData
+        },
+      })
+      return response.data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al enviar la revisión del reporte',
+        )
+      }
+      throw new Error('Error al enviar la revisión del reporte')
+    }
+  },
+
+  // Get Report Review
+  getReportReview: async (public_id_report: string) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.get(`/api/report/${public_id_report}`)
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al obtener la revisión del reporte',
+        )
+      }
+      throw new Error('Error al obtener la revisión del reporte')
+    }
+  },
 }
