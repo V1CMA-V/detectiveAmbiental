@@ -94,6 +94,7 @@ import AddCategory from './add-category'
 import { useAuth } from './auth-context'
 import CategoriesTable from './categories-table'
 import AddReportReviewForm from './forms/add-report-review-form'
+import ReportReviewDisplay from './report-review-display'
 import UserTab from './user-tab'
 
 // Create a separate component for the drag handle
@@ -590,10 +591,23 @@ function TableCellViewer({ item }: { item: Report }) {
           <DrawerDescription>Detalles y edición del reporte</DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
-          {!isMobile && (
+          {/* Images for Reports */}
+          {item.images && item.images.length > 0 && (
             <>
-              {/* Images for Reports */}
-              <div className="bg-black aspect-square rounded-2xl"></div>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {item.images.map((image, index) => (
+                  <div
+                    key={index}
+                    className="aspect-square overflow-hidden rounded-lg border"
+                  >
+                    <img
+                      src={image.url_image}
+                      alt={`Imagen del reporte ${index + 1}`}
+                      className="size-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
               <Separator />
             </>
           )}
@@ -662,16 +676,18 @@ function TableCellViewer({ item }: { item: Report }) {
             </h3>
 
             {/* Mostrar revisión del reporte si existe */}
+            {item.review && <ReportReviewDisplay reportReview={item.review} />}
 
-            {}
             {/* Crear reporte si no hay uno asignado */}
-            <AddReportReviewForm public_id_report={item.public_id} />
+            {!item.review && (
+              <AddReportReviewForm public_id_report={item.public_id} />
+            )}
           </div>
         </div>
 
         <DrawerFooter>
           <DrawerClose asChild>
-            <Button variant="outline">Done</Button>
+            <Button variant="outline">Cerrar</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

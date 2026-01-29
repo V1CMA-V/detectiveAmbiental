@@ -13,4 +13,21 @@ export interface Report {
   status: {
     status: string
   }
+  images: {
+    url_image: string
+  }[]
+  review: ReportReview | null
+}
+
+export interface ReportReview {
+  id_review: number
+  comment: string
+  user: {
+    firstname: string
+    lastname: string
+  }
+  images: {
+    id_image: number
+    url_image: string
+  }[]
 }

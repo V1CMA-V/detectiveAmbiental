@@ -449,24 +449,4 @@ export const authService = {
       throw new Error('Error al enviar la revisión del reporte')
     }
   },
-
-  // Get Report Review
-  getReportReview: async (public_id_report: string) => {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      throw new Error('No autenticado')
-    }
-    try {
-      const { data } = await axios.get(`/api/report/${public_id_report}`)
-      return data
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          error.response?.data?.error ||
-            'Error al obtener la revisión del reporte',
-        )
-      }
-      throw new Error('Error al obtener la revisión del reporte')
-    }
-  },
 }
