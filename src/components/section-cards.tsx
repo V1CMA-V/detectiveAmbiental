@@ -22,7 +22,7 @@ export function SectionCards({ reports }: { reports: Report[] }) {
     (report) => report.status.status === 'En Proceso',
   ).length
   const totalResolvedReports = reports.filter(
-    (report) => report.status.status === 'resolved',
+    (report) => report.status.status === 'Finalizado',
   ).length
 
   // Calcular reportes del mes actual y mes anterior
@@ -123,7 +123,7 @@ export function SectionCards({ reports }: { reports: Report[] }) {
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Resueltos</CardDescription>
+          <CardDescription>Finalizados</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {totalResolvedReports}
           </CardTitle>
@@ -136,7 +136,7 @@ export function SectionCards({ reports }: { reports: Report[] }) {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Reportes resueltos <CheckCircle2 className="size-4" />
+            Reportes finalizados <CheckCircle2 className="size-4" />
           </div>
           <div className="text-muted-foreground">
             Solucionados Correctamente

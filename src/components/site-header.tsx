@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useLocation } from 'react-router'
+import { ModeToggle } from './mode-toggle'
 
 const titleSections: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -22,6 +23,7 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">{pageTitle}</h1>
         <div className="ml-auto flex items-center gap-2">
+          <ModeToggle />
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <a href="https://buap.mx" rel="noopener noreferrer" target="_blank">
               <img
