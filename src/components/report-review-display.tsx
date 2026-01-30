@@ -13,6 +13,7 @@ import type { ReportReview } from '@/types/report'
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useAuth } from './auth-context'
 
 interface ReportReviewDisplayProps {
   reportReview: ReportReview
@@ -25,6 +26,9 @@ export default function ReportReviewDisplay({
 }: ReportReviewDisplayProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const { hasConfigPermission } = useAuth()
+
+  const isConfigPermission = hasConfigPermission()
 
   const handleDeleteReview = async () => {
     try {
@@ -61,38 +65,44 @@ export default function ReportReviewDisplay({
             </p>
           </div>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="destructive" size="icon" title="Eliminar revisión">
-              <Trash2 className="size-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>¿Estás seguro?</DialogTitle>
-              <DialogDescription>
-                Esta acción no se puede deshacer. La revisión y todas sus
-                imágenes serán eliminadas permanentemente.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                disabled={isDeleting}
-              >
-                Cancelar
-              </Button>
+        {isConfigPermission && (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
               <Button
                 variant="destructive"
-                onClick={handleDeleteReview}
-                disabled={isDeleting}
+                size="icon"
+                title="Eliminar revisión"
               >
-                {isDeleting ? 'Eliminando...' : 'Eliminar revisión'}
+                <Trash2 className="size-4" />
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>¿Estás seguro?</DialogTitle>
+                <DialogDescription>
+                  Esta acción no se puede deshacer. La revisión y todas sus
+                  imágenes serán eliminadas permanentemente.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                  disabled={isDeleting}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteReview}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? 'Eliminando...' : 'Eliminar revisión'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
       {reportReview.reviewImages && reportReview.reviewImages.length > 0 && (
         <div className="flex flex-col gap-2">
