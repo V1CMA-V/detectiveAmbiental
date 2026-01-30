@@ -131,12 +131,12 @@ export default function MapPage() {
             </div>
 
             {/* Mapa */}
-            <div style={{ height: '600px', width: '100%' }}>
+            <div className="h-150 w-full -z-50">
               <MapContainer
                 center={position}
                 zoom={16}
                 scrollWheelZoom={true}
-                style={{ height: '100%', width: '100%', borderRadius: '8px' }}
+                className="h-full w-full rounded-xl"
               >
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -163,22 +163,14 @@ export default function MapPage() {
                       icon={icon}
                     >
                       <Popup>
-                        <div style={{ minWidth: '250px' }}>
-                          <h3
-                            style={{
-                              margin: '0 0 10px 0',
-                              fontSize: '16px',
-                              fontWeight: 'bold',
-                            }}
-                          >
+                        <div
+                          className="min-w-62.5"
+                          style={{ minWidth: '250px' }}
+                        >
+                          <h3 className="mb-2.5 text-lg font-bold">
                             {report.title}
                           </h3>
-                          <div
-                            style={{
-                              marginBottom: '8px',
-                              lineHeight: '1.6',
-                            }}
-                          >
+                          <div className="mb-2 leading-8">
                             <strong>Folio:</strong> {report.folio}
                             <br />
                             <strong>Fecha:</strong> {report.date}
