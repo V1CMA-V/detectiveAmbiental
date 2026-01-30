@@ -237,7 +237,8 @@ const columns: ColumnDef<Report>[] = [
     },
   },
   {
-    accessorKey: 'fecha',
+    accessorKey: 'date',
+    id: 'fecha',
     header: 'Fecha de creación',
     cell: ({ row }) => (
       <p>
@@ -248,6 +249,11 @@ const columns: ColumnDef<Report>[] = [
         })}
       </p>
     ),
+    sortingFn: (rowA, rowB) => {
+      const dateA = new Date(rowA.original.date).getTime()
+      const dateB = new Date(rowB.original.date).getTime()
+      return dateA - dateB
+    },
   },
   {
     accessorKey: 'titulo',
