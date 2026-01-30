@@ -92,6 +92,7 @@ import type { Report } from '@/types/report'
 import type { UserAdmin } from '@/types/user'
 import L from 'leaflet'
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
+import { Link } from 'react-router'
 import AddCategory from './add-category'
 import { useAuth } from './auth-context'
 import CategoriesTable from './categories-table'
@@ -768,6 +769,12 @@ function TableCellViewer({ item }: { item: Report }) {
         </div>
 
         <DrawerFooter>
+          <Button asChild>
+            <Link to={`/dashboard/reports/${item.folio}`} className="w-full">
+              Ver reporte completo
+            </Link>
+          </Button>
+
           <DrawerClose asChild>
             <Button variant="outline">Cerrar</Button>
           </DrawerClose>
