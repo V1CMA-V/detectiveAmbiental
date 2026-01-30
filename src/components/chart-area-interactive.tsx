@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
 
@@ -102,7 +100,7 @@ export function ChartAreaInteractive({ reports }: { reports: Report[] }) {
             value={timeRange}
             onValueChange={setTimeRange}
             variant="outline"
-            className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
+            className="hidden *:data-[slot=toggle-group-item]:px-4! @[767px]/card:flex"
           >
             <ToggleGroupItem value="90d">Últimos 3 meses</ToggleGroupItem>
             <ToggleGroupItem value="30d">Últimos 30 días</ToggleGroupItem>
@@ -133,7 +131,7 @@ export function ChartAreaInteractive({ reports }: { reports: Report[] }) {
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-62.5 w-full"
         >
           <AreaChart data={filteredData}>
             <defs>
@@ -170,11 +168,14 @@ export function ChartAreaInteractive({ reports }: { reports: Report[] }) {
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
-                    return new Date(value as string).toLocaleDateString('es-MX', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })
+                    return new Date(value as string).toLocaleDateString(
+                      'es-MX',
+                      {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      },
+                    )
                   }}
                   indicator="dot"
                 />
