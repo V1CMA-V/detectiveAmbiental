@@ -44,6 +44,7 @@ import * as React from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -320,6 +321,18 @@ export default function UsersAdminTable({
 
   return (
     <div className="flex flex-col gap-4 px-4 lg:px-6">
+      {/* Buscador por correo */}
+      <div className="flex items-center gap-2">
+        <Input
+          placeholder="Buscar por correo..."
+          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn('email')?.setFilterValue(event.target.value)
+          }
+          className="h-9 w-full lg:w-62.5"
+        />
+      </div>
+
       <div className="overflow-hidden rounded-lg border">
         <DndContext
           collisionDetection={closestCenter}
