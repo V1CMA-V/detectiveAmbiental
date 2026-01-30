@@ -6,6 +6,7 @@ import { LoginPage } from '@/pages/Login'
 import NotFoundPage from '@/pages/NotFound'
 import { Route, Routes } from 'react-router'
 import AuthProvider from './components/auth-context'
+import MapPage from './pages/dashboard/maps/Page'
 import ProfilePage from './pages/dashboard/profile/Page'
 import ForgotPassword from './pages/ForgotPassword'
 import InactiveAccount from './pages/InactiveAccount'
@@ -30,6 +31,7 @@ export default function Routing() {
         <Route path="dashboard/" element={<PrivateLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="map" element={<MapPage />} />
         </Route>
 
         {/* Inactive Account Route */}

@@ -23,19 +23,15 @@ export default function Page() {
       try {
         setLoading(true)
         const data = await authService.getAllReports()
-        console.log('Reports fetched:', data)
 
         const categories = await authService.getAllCategories()
-        console.log('Categories fetched:', categories)
 
         setReports(data)
         setCategories(categories)
 
         // Cargar usuarios solo si tiene permiso de configuración
         if (isConfigPermission) {
-          console.log('User has config permission - fetching admin users')
           const users = await authService.getAdminUsers()
-          console.log('Admin users fetched:', users)
           setUsersAdmin(users)
         }
       } catch (error) {

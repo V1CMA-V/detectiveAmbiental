@@ -34,3 +34,20 @@ export interface ReportReview {
     url: string
   }[]
 }
+
+export interface ReportMap {
+  folio: string
+  title: string
+  date: string
+  latitude: string
+  longitude: string
+  categories: {
+    category: string
+  }
+  user: {
+    email: string
+  }
+  status: {
+    status: string
+  }
+}

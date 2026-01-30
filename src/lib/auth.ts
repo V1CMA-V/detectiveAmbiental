@@ -526,4 +526,28 @@ export const authService = {
       throw new Error('Error al enviar la revisión del reporte con imágenes')
     }
   },
+
+  getReportsMap: async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    try {
+      const { data } = await axios.get('/api/reports-map', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al obtener los reportes para el mapa',
+        )
+      }
+      throw new Error('Error al obtener los reportes para el mapa')
+    }
+  },
 }
