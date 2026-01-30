@@ -98,6 +98,7 @@ import AddCategory from './add-category'
 import { useAuth } from './auth-context'
 import CategoriesTable from './categories-table'
 import AddReportReviewForm from './forms/add-report-review-form'
+import UpdateReportForm from './forms/update-reprot-form'
 import ReportReviewDisplay from './report-review-display'
 import UserTab from './user-tab'
 
@@ -195,8 +196,11 @@ const columns: ColumnDef<Report>[] = [
   {
     accessorKey: 'folio',
     header: 'Folio',
-    cell: ({ row }) => {
-      return <TableCellViewer item={row.original} />
+    cell: ({ row, table }) => {
+      const categories = (
+        table.options.meta as { categories?: Category[] } | undefined
+      )?.categories
+      return <TableCellViewer item={row.original} categories={categories} />
     },
     enableHiding: false,
   },
@@ -358,6 +362,9 @@ export function DataTable({
       rowSelection,
       columnFilters,
       pagination,
+    },
+    meta: {
+      categories,
     },
     getRowId: (row) => row.id_report.toString(),
     enableRowSelection: true,
@@ -741,7 +748,13 @@ export function DataTable({
   )
 }
 
-function TableCellViewer({ item }: { item: Report }) {
+function TableCellViewer({
+  item,
+  categories,
+}: {
+  item: Report
+  categories?: Category[]
+}) {
   const isMobile = useIsMobile()
 
   const textDate = new Date(item.date).toLocaleDateString('es-MX')
@@ -814,9 +827,8 @@ function TableCellViewer({ item }: { item: Report }) {
 
           <Separator />
 
-          {/* Form to edit Report */}
-
-          <form className="flex flex-col gap-4">
+          {/* Report details */}
+          <div className="flex flex-col gap-4">
             <h4 className="flex flex-col gap-3 text-xl text-foreground font-medium ">
               <span className="text-sm text-muted-foreground font-normal">
                 Titulo
@@ -839,43 +851,26 @@ function TableCellViewer({ item }: { item: Report }) {
                 </span>
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                {/* TODO: Pendiente a mostrar todas las categorias en caso de que si se requiera modificar la categoria */}
-                <Label htmlFor="category">Categoria</Label>
-                <Select defaultValue={item.categories.category}>
-                  <SelectTrigger id="category" className="w-full">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={item.categories.category}>
-                      {item.categories.category}
-                    </SelectItem>
-                    <SelectItem value="Executive Summary">
-                      Mas categorias
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+
+            {item.status.status === 'Finalizado' ? (
+              <div className="grid grid-cols-2 gap-4">
+                <p className="text-sm text-muted-foreground ">
+                  Categoria <br />
+                  <span className="text-lg text-foreground">
+                    {item.categories.category}
+                  </span>
+                </p>
+                <p className="text-sm text-muted-foreground ">
+                  Estatus <br />
+                  <span className="text-lg text-foreground">
+                    {item.status.status}
+                  </span>
+                </p>
               </div>
-              <div className="flex flex-col gap-3">
-                {/* TODO: Pendiente a cargar los demas estatus del reporte para ir modificando a como se avance en el reporte */}
-                <Label htmlFor="status">Estatus</Label>
-                <Select defaultValue={item.status.status}>
-                  <SelectTrigger id="status" className="w-full">
-                    <SelectValue placeholder="Select a status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Done">Done</SelectItem>
-                    <SelectItem value={item.status.status}>
-                      {item.status.status}
-                    </SelectItem>
-                    <SelectItem value="Not Started">Not Started</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <Button type="submit">Submit</Button>
-          </form>
+            ) : (
+              <UpdateReportForm item={item} categories={categories} />
+            )}
+          </div>
           <Separator />
 
           {/* Admin report-review */}

@@ -597,4 +597,43 @@ export const authService = {
       throw new Error('Error al eliminar la revisión')
     }
   },
+
+  // Update category or status to category
+  updateCategoryStatusBFolio: async ({
+    folio,
+    id_category,
+    id_status,
+  }: {
+    folio: string
+    id_category: number
+    id_status: number
+  }) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.patch(
+        `/api/reports/folio/${folio}/category-status`,
+        {
+          id_category,
+          id_status,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al actualizar la categoría o estatus del reporte',
+        )
+      }
+      throw new Error('Error al actualizar la categoría o estatus del reporte')
+    }
+  },
 }

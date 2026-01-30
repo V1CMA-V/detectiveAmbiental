@@ -8,12 +8,14 @@ export interface Report {
   longitude: string
   description: string
   categories: {
+    id_category: number
     category: string
   }
   user: {
     email: string
   }
   status: {
+    id_status: number
     status: string
   }
   images: {
