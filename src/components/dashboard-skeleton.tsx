@@ -31,7 +31,7 @@ export default function DashboardSkeleton() {
           </CardFooter>
         </Card>
 
-        {/* Card 3 - En Proceso */}
+        {/* Card 3 - En Revision */}
         <Card className="@container/card">
           <CardHeader>
             <Skeleton className="h-4 w-28" />

@@ -19,7 +19,7 @@ export function SectionCards({ reports }: { reports: Report[] }) {
     (report) => report.status.status === 'Pendiente',
   ).length
   const totalInProcessReports = reports.filter(
-    (report) => report.status.status === 'En Proceso',
+    (report) => report.status.status === 'En Revision',
   ).length
   const totalResolvedReports = reports.filter(
     (report) => report.status.status === 'Finalizado',
@@ -107,14 +107,14 @@ export function SectionCards({ reports }: { reports: Report[] }) {
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>En Proceso</CardDescription>
+          <CardDescription>En Revision</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {totalInProcessReports}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Reportes en proceso <SquareActivity className="size-4" />
+            Reportes en revision <SquareActivity className="size-4" />
           </div>
           <div className="text-muted-foreground">
             Atendidos por mantenimiento

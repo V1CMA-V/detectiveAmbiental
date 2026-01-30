@@ -136,7 +136,7 @@ const createCustomIcon = (color: string) => {
 // Iconos por estado
 const markerIcons = {
   Pendiente: createCustomIcon('#ef4444'), // Rojo
-  'En proceso': createCustomIcon('#f97316'), // Naranja
+  'En Revision': createCustomIcon('#f97316'), // Naranja
   Finalizado: createCustomIcon('#22c55e'), // Verde
 }
 
@@ -223,7 +223,7 @@ const columns: ColumnDef<Report>[] = [
         <Badge variant="outline" className="text-muted-foreground px-1.5">
           {status === 'Finalizado' ? (
             <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
-          ) : status === 'En Proceso' ? (
+          ) : status === 'En Revision' ? (
             <IconEye className="text-yellow-500" />
           ) : status === 'Pendiente' ? (
             <IconClock className="text-blue-500" />
@@ -508,7 +508,7 @@ export function DataTable({
                 <SelectContent>
                   <SelectItem value="all">Todos los estatus</SelectItem>
                   <SelectItem value="Pendiente">Pendiente</SelectItem>
-                  <SelectItem value="En Proceso">En Proceso</SelectItem>
+                  <SelectItem value="En Revision">En Revision</SelectItem>
                   <SelectItem value="Finalizado">Finalizado</SelectItem>
                 </SelectContent>
               </Select>
