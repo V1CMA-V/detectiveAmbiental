@@ -68,6 +68,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -192,7 +193,7 @@ const columns: ColumnDef<Report>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'header',
+    accessorKey: 'folio',
     header: 'Folio',
     cell: ({ row }) => {
       return <TableCellViewer item={row.original} />
@@ -209,6 +210,9 @@ const columns: ColumnDef<Report>[] = [
         </Badge>
       </div>
     ),
+    filterFn: (row, value) => {
+      return row.original.categories.category === value
+    },
   },
   {
     accessorKey: 'estatus',
@@ -228,12 +232,21 @@ const columns: ColumnDef<Report>[] = [
         </Badge>
       )
     },
+    filterFn: (row, value) => {
+      return row.original.status.status === value
+    },
   },
   {
     accessorKey: 'fecha',
     header: 'Fecha de creación',
     cell: ({ row }) => (
-      <p>{new Date(row.original.date).toLocaleDateString('es-MX')}</p>
+      <p>
+        {new Date(row.original.date).toLocaleDateString('es-MX', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        })}
+      </p>
     ),
   },
   {
@@ -416,39 +429,6 @@ export function DataTable({
           </TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <IconLayoutColumns />
-                <span className="hidden lg:inline">Personalizar Columnas</span>
-                <span className="lg:hidden">Columnas</span>
-                <IconChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {table
-                .getAllColumns()
-                .filter(
-                  (column) =>
-                    typeof column.accessorFn !== 'undefined' &&
-                    column.getCanHide(),
-                )
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
           {/* Add category */}
           <AddCategory />
         </div>
@@ -457,6 +437,140 @@ export function DataTable({
         value="reports"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
+        {/* Filtros y búsqueda */}
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            {/* Buscador por folio */}
+            <div className="flex flex-1 items-center gap-2">
+              <Input
+                placeholder="Buscar por folio..."
+                value={
+                  (table.getColumn('folio')?.getFilterValue() as string) ?? ''
+                }
+                onChange={(event) =>
+                  table.getColumn('folio')?.setFilterValue(event.target.value)
+                }
+                className="h-9 w-full lg:w-62.5"
+              />
+            </div>
+
+            {/* Filtros y personalizar columnas */}
+            <div className="flex items-center gap-2">
+              {/* Filtro por categoría */}
+              <Select
+                value={
+                  (table.getColumn('categoria')?.getFilterValue() as string) ??
+                  'all'
+                }
+                onValueChange={(value) =>
+                  table
+                    .getColumn('categoria')
+                    ?.setFilterValue(value === 'all' ? '' : value)
+                }
+              >
+                <SelectTrigger className="h-9 w-full lg:w-45">
+                  <SelectValue placeholder="Todas las categorías" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas las categorías</SelectItem>
+                  {categories?.map((category) => (
+                    <SelectItem
+                      key={category.id_category}
+                      value={category.category}
+                    >
+                      {category.category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Filtro por estatus */}
+              <Select
+                value={
+                  (table.getColumn('estatus')?.getFilterValue() as string) ??
+                  'all'
+                }
+                onValueChange={(value) =>
+                  table
+                    .getColumn('estatus')
+                    ?.setFilterValue(value === 'all' ? '' : value)
+                }
+              >
+                <SelectTrigger className="h-9 w-full lg:w-45">
+                  <SelectValue placeholder="Todos los estatus" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos los estatus</SelectItem>
+                  <SelectItem value="Pendiente">Pendiente</SelectItem>
+                  <SelectItem value="En Revisión">En Revisión</SelectItem>
+                  <SelectItem value="Finalizado">Finalizado</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Ordenar por fecha */}
+              <Select
+                value={
+                  sorting[0]?.id === 'fecha'
+                    ? sorting[0]?.desc
+                      ? 'desc'
+                      : 'asc'
+                    : 'default'
+                }
+                onValueChange={(value) => {
+                  if (value === 'default') {
+                    setSorting([])
+                  } else {
+                    setSorting([{ id: 'fecha', desc: value === 'desc' }])
+                  }
+                }}
+              >
+                <SelectTrigger className="h-9 w-full lg:w-45">
+                  <SelectValue placeholder="Ordenar por fecha" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">Sin ordenar</SelectItem>
+                  <SelectItem value="desc">Más reciente</SelectItem>
+                  <SelectItem value="asc">Más antigua</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Personalizar columnas */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9">
+                    <IconLayoutColumns />
+                    <span className="hidden lg:inline">Columnas</span>
+                    <IconChevronDown />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {table
+                    .getAllColumns()
+                    .filter(
+                      (column) =>
+                        typeof column.accessorFn !== 'undefined' &&
+                        column.getCanHide(),
+                    )
+                    .map((column) => {
+                      return (
+                        <DropdownMenuCheckboxItem
+                          key={column.id}
+                          className="capitalize"
+                          checked={column.getIsVisible()}
+                          onCheckedChange={(value) =>
+                            column.toggleVisibility(!!value)
+                          }
+                        >
+                          {column.id}
+                        </DropdownMenuCheckboxItem>
+                      )
+                    })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+
         <div className="overflow-hidden rounded-lg border">
           <DndContext
             collisionDetection={closestCenter}
