@@ -1,3 +1,4 @@
+import MapPageSkeleton from '@/components/map-skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
@@ -89,11 +90,7 @@ export default function MapPage() {
   }, [reports, statusFilter, folioSearch])
 
   if (loading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <p className="text-lg">Cargando mapa...</p>
-      </div>
-    )
+    return <MapPageSkeleton />
   }
 
   return (

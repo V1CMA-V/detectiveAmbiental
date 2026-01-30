@@ -1,5 +1,6 @@
 import { useAuth } from '@/components/auth-context'
 import { ChartAreaInteractive } from '@/components/chart-area-interactive'
+import DashboardSkeleton from '@/components/dashboard-skeleton'
 import { DataTable } from '@/components/data-table'
 import { SectionCards } from '@/components/section-cards'
 import { authService } from '@/lib/auth'
@@ -45,7 +46,7 @@ export default function Page() {
   }, [isConfigPermission])
 
   if (loading) {
-    return <div className="p-4">Cargando reportes...</div>
+    return <DashboardSkeleton />
   }
 
   return (
