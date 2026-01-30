@@ -52,7 +52,7 @@ const createCustomIcon = (color: string) => {
 // Iconos por estado
 const icons = {
   Pendiente: createCustomIcon('#ef4444'), // Rojo
-  'En proceso': createCustomIcon('#f97316'), // Naranja
+  'En Proceso': createCustomIcon('#f97316'), // Naranja
   Finalizado: createCustomIcon('#22c55e'), // Verde
 }
 
@@ -118,7 +118,7 @@ export default function MapPage() {
                   <SelectContent>
                     <SelectItem value="all">Todos los estados</SelectItem>
                     <SelectItem value="Pendiente">Pendiente</SelectItem>
-                    <SelectItem value="En proceso">En proceso</SelectItem>
+                    <SelectItem value="En Proceso">En proceso</SelectItem>
                     <SelectItem value="Finalizado">Finalizado</SelectItem>
                   </SelectContent>
                 </Select>

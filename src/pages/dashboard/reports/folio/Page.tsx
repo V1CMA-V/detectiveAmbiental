@@ -1,4 +1,5 @@
 import AddReportReviewForm from '@/components/forms/add-report-review-form'
+import ReportReviewDisplay from '@/components/report-review-display'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,11 +22,10 @@ import {
   Clock,
   FileEdit,
   MapPin,
-  MessageSquare,
   Tag,
   User,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import { useNavigate, useParams } from 'react-router'
 
@@ -36,25 +36,25 @@ export default function ReportFolioPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchReport = async () => {
-      if (!folio) return
+  const fetchReport = useCallback(async () => {
+    if (!folio) return
 
-      try {
-        setLoading(true)
-        const data = await authService.getReportFolio(folio)
-        setReport(data)
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Error al cargar el reporte',
-        )
-      } finally {
-        setLoading(false)
-      }
+    try {
+      setLoading(true)
+      const data = await authService.getReportFolio(folio)
+      setReport(data)
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Error al cargar el reporte',
+      )
+    } finally {
+      setLoading(false)
     }
-
-    fetchReport()
   }, [folio])
+
+  useEffect(() => {
+    fetchReport()
+  }, [fetchReport])
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -258,42 +258,11 @@ export default function ReportFolioPage() {
                   {report.review.user.lastname}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="font-semibold">Comentario</h3>
-                  </div>
-                  <p className="text-muted-foreground">
-                    {report.review.comment}
-                  </p>
-                </div>
-
-                {report.review.reviewImages &&
-                  report.review.reviewImages.length > 0 && (
-                    <>
-                      <Separator />
-                      <div>
-                        <h3 className="font-semibold mb-3">
-                          Evidencias de Resolución
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {report.review.reviewImages.map((image) => (
-                            <div
-                              key={image.id_image}
-                              className="relative aspect-video rounded-lg overflow-hidden bg-muted"
-                            >
-                              <img
-                                src={image.url}
-                                alt={`Resolución ${image.id_image}`}
-                                className="object-cover w-full h-full"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
+              <CardContent>
+                <ReportReviewDisplay
+                  reportReview={report.review}
+                  onDeleted={fetchReport}
+                />
               </CardContent>
             </Card>
           ) : (
@@ -308,7 +277,10 @@ export default function ReportFolioPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <AddReportReviewForm public_id_report={report.public_id} />
+                <AddReportReviewForm
+                  public_id_report={report.public_id}
+                  onSuccess={fetchReport}
+                />
               </CardContent>
             </Card>
           )}

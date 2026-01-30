@@ -8,8 +8,10 @@ import { Textarea } from '../ui/textarea'
 
 export default function AddReportReviewForm({
   public_id_report,
+  onSuccess,
 }: {
   public_id_report: string
+  onSuccess?: () => void
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [reviewNotes, setReviewNotes] = useState('')
@@ -46,6 +48,13 @@ export default function AddReportReviewForm({
       // Reset file input
       const fileInput = document.getElementById('pictures') as HTMLInputElement
       if (fileInput) fileInput.value = ''
+
+      // Call onSuccess callback or reload page
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        window.location.reload()
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Error al enviar la revisión',
@@ -78,7 +87,7 @@ export default function AddReportReviewForm({
             id="pictures"
             type="file"
             multiple
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/webp"
             onChange={handleImageChange}
             disabled={isSubmitting}
           />

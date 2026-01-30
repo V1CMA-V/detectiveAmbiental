@@ -223,7 +223,7 @@ const columns: ColumnDef<Report>[] = [
         <Badge variant="outline" className="text-muted-foreground px-1.5">
           {status === 'Finalizado' ? (
             <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
-          ) : status === 'En Revisión' ? (
+          ) : status === 'En Proceso' ? (
             <IconEye className="text-yellow-500" />
           ) : status === 'Pendiente' ? (
             <IconClock className="text-blue-500" />
@@ -502,7 +502,7 @@ export function DataTable({
                 <SelectContent>
                   <SelectItem value="all">Todos los estatus</SelectItem>
                   <SelectItem value="Pendiente">Pendiente</SelectItem>
-                  <SelectItem value="En Revisión">En Revisión</SelectItem>
+                  <SelectItem value="En Proceso">En Proceso</SelectItem>
                   <SelectItem value="Finalizado">Finalizado</SelectItem>
                 </SelectContent>
               </Select>

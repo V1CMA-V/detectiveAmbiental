@@ -573,4 +573,28 @@ export const authService = {
       throw new Error('Error al obtener el reporte por folio')
     }
   },
+
+  // Delete Review and its Images from Cloudinary
+  deleteReview: async (reviewPublicId: string) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+
+    try {
+      const { data } = await axios.delete(`/api/review/${reviewPublicId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error || 'Error al eliminar la revisión',
+        )
+      }
+      throw new Error('Error al eliminar la revisión')
+    }
+  },
 }
