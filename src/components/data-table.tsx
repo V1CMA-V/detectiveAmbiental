@@ -210,8 +210,8 @@ const columns: ColumnDef<Report>[] = [
         </Badge>
       </div>
     ),
-    filterFn: (row, value) => {
-      return row.original.categories.category === value
+    filterFn: (row, _columnId, filterValue) => {
+      return row.original.categories.category === filterValue
     },
   },
   {
@@ -232,8 +232,8 @@ const columns: ColumnDef<Report>[] = [
         </Badge>
       )
     },
-    filterFn: (row, value) => {
-      return row.original.status.status === value
+    filterFn: (row, _columnId, filterValue) => {
+      return row.original.status.status === filterValue
     },
   },
   {
