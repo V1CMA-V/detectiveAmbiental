@@ -170,7 +170,7 @@ export function ChartAreaInteractive({ reports }: { reports: Report[] }) {
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString('es-MX', {
+                    return new Date(value as string).toLocaleDateString('es-MX', {
                       month: 'long',
                       day: 'numeric',
                       year: 'numeric',
