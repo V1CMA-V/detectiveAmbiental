@@ -550,4 +550,27 @@ export const authService = {
       throw new Error('Error al obtener los reportes para el mapa')
     }
   },
+
+  getReportFolio: async (folio: string) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      throw new Error('No autenticado')
+    }
+    try {
+      const { data } = await axios.get(`/api/reports/folio/${folio}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          error.response?.data?.error ||
+            'Error al obtener el reporte por folio',
+        )
+      }
+      throw new Error('Error al obtener el reporte por folio')
+    }
+  },
 }

@@ -8,6 +8,7 @@ import { Route, Routes } from 'react-router'
 import AuthProvider from './components/auth-context'
 import MapPage from './pages/dashboard/maps/Page'
 import ProfilePage from './pages/dashboard/profile/Page'
+import ReportFolioPage from './pages/dashboard/reports/folio/Page'
 import ForgotPassword from './pages/ForgotPassword'
 import InactiveAccount from './pages/InactiveAccount'
 import ResetPassword from './pages/ResetPassword'
@@ -32,6 +33,9 @@ export default function Routing() {
           <Route index element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="map" element={<MapPage />} />
+          <Route path="reports">
+            <Route path=":folio" element={<ReportFolioPage />} />
+          </Route>
         </Route>
 
         {/* Inactive Account Route */}
