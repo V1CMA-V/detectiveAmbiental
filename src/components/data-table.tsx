@@ -90,12 +90,53 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import type { Category } from '@/types/category'
 import type { Report } from '@/types/report'
 import type { UserAdmin } from '@/types/user'
+import L from 'leaflet'
+import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import AddCategory from './add-category'
 import { useAuth } from './auth-context'
 import CategoriesTable from './categories-table'
 import AddReportReviewForm from './forms/add-report-review-form'
 import ReportReviewDisplay from './report-review-display'
 import UserTab from './user-tab'
+
+// Crear iconos personalizados para cada estado
+const createCustomIcon = (color: string) => {
+  return L.divIcon({
+    className: 'custom-marker',
+    html: `
+      <div style="
+        background-color: ${color};
+        width: 32px;
+        height: 32px;
+        border-radius: 50% 50% 50% 0;
+        border: 3px solid white;
+        transform: rotate(-45deg);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+      ">
+        <div style="
+          width: 10px;
+          height: 10px;
+          background-color: white;
+          border-radius: 50%;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        "></div>
+      </div>
+    `,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+  })
+}
+
+// Iconos por estado
+const markerIcons = {
+  Pendiente: createCustomIcon('#ef4444'), // Rojo
+  'En proceso': createCustomIcon('#f97316'), // Naranja
+  Finalizado: createCustomIcon('#22c55e'), // Verde
+}
 
 // Create a separate component for the drag handle
 function DragHandle({ id }: { id: number }) {
@@ -611,6 +652,43 @@ function TableCellViewer({ item }: { item: Report }) {
               <Separator />
             </>
           )}
+
+          {/* Pin on Map */}
+          <div>
+            <h3 className="text-lg font-medium text-foreground mb-4">
+              Ubicación del reporte
+            </h3>
+
+            <div className="h-64 w-full rounded-md border">
+              <MapContainer
+                center={[parseFloat(item.latitude), parseFloat(item.longitude)]}
+                zoom={16}
+                scrollWheelZoom={false}
+                style={{ height: '100%', width: '100%', borderRadius: '8px' }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker
+                  position={[
+                    parseFloat(item.latitude),
+                    parseFloat(item.longitude),
+                  ]}
+                  icon={
+                    markerIcons[
+                      item.status.status as keyof typeof markerIcons
+                    ] || markerIcons.Pendiente
+                  }
+                ></Marker>
+              </MapContainer>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Form to edit Report */}
+
           <form className="flex flex-col gap-4">
             <h4 className="flex flex-col gap-3 text-xl text-foreground font-medium ">
               <span className="text-sm text-muted-foreground font-normal">
@@ -618,6 +696,10 @@ function TableCellViewer({ item }: { item: Report }) {
               </span>
               {item.title}
             </h4>
+
+            <p className="text-muted-foreground leading-relaxed text-sm">
+              {item.description}
+            </p>
             <div className="grid grid-cols-2 gap-4">
               <p className="text-sm text-muted-foreground ">
                 Fecha <br />

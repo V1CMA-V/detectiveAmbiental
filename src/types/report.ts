@@ -4,6 +4,9 @@ export interface Report {
   folio: string
   title: string
   date: string
+  latitude: string
+  longitude: string
+  description: string
   categories: {
     category: string
   }
