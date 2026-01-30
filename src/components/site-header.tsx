@@ -7,6 +7,7 @@ import { ModeToggle } from './mode-toggle'
 const titleSections: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/dashboard/profile': 'Cuenta',
+  '/dashboard/map': 'Mapa de Reportes',
 }
 
 export function SiteHeader() {
