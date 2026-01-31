@@ -16,7 +16,14 @@ import z from 'zod'
 import { LogginButton } from '../submit-buttons'
 
 const formSchema = z.object({
-  email: z.string().email('Correo inválido.'),
+  email: z
+    .string()
+    .email('Correo inválido.')
+    .refine(
+      (email) =>
+        email.endsWith('@correo.buap.mx') || email.endsWith('@alumno.buap.mx'),
+      'El correo debe ser de dominio @correo.buap.mx o @alumno.buap.mx',
+    ),
   password: z
     .string()
     .min(8, 'La contraseña debe tener al menos 8 caracteres.'),

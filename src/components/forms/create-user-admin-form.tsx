@@ -19,7 +19,14 @@ const formSchema = z.object({
   password: z
     .string()
     .min(8, 'La nueva contraseña debe tener al menos 8 caracteres.'),
-  email: z.string().email('Correo electrónico inválido'),
+  email: z
+    .string()
+    .email('Correo electrónico inválido')
+    .refine(
+      (email) =>
+        email.endsWith('@correo.buap.mx') || email.endsWith('@alumno.buap.mx'),
+      'El correo debe ser de dominio @correo.buap.mx o @alumno.buap.mx',
+    ),
 })
 
 export function NewUserAdminForm() {
