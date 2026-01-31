@@ -25,10 +25,10 @@ import {
   IconChevronsRight,
   IconCircleCheckFilled,
   IconClock,
-  IconDotsVertical,
   IconEye,
   IconGripVertical,
   IconLayoutColumns,
+  IconRefresh,
 } from '@tabler/icons-react'
 import {
   flexRender,
@@ -64,8 +64,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
@@ -156,7 +154,7 @@ function DragHandle({ id }: { id: number }) {
       className="text-muted-foreground size-7 hover:bg-transparent"
     >
       <IconGripVertical className="text-muted-foreground size-3" />
-      <span className="sr-only">Drag to reorder</span>
+      <span className="sr-only">Manten para mover</span>
     </Button>
   )
 }
@@ -205,14 +203,21 @@ const columns: ColumnDef<Report>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: 'titulo',
+    header: 'Titulo',
+    cell: ({ row }) => (
+      <div className="w-32">
+        <p className="leading-relaxed text-sm">{row.original.title}</p>
+      </div>
+    ),
+  },
+  {
     accessorKey: 'categoria',
     header: 'Categoria',
     cell: ({ row }) => (
-      <div className="w-32">
-        <Badge variant="outline" className="text-muted-foreground px-1.5">
-          {row.original.categories.category}
-        </Badge>
-      </div>
+      <Badge variant="outline" className="text-muted-foreground px-1.5">
+        {row.original.categories.category}
+      </Badge>
     ),
     filterFn: (row, _columnId, filterValue) => {
       return row.original.categories.category === filterValue
@@ -259,39 +264,11 @@ const columns: ColumnDef<Report>[] = [
       return dateA - dateB
     },
   },
-  {
-    accessorKey: 'titulo',
-    header: 'Titulo',
-    cell: ({ row }) => <p>{row.original.title}</p>,
-  },
+
   {
     accessorKey: 'correo',
     header: 'Correo del usuario',
     cell: ({ row }) => <p>{row.original.user.email}</p>,
-  },
-  {
-    id: 'actions',
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
   },
 ]
 
@@ -324,12 +301,17 @@ export function DataTable({
   data: initialData,
   categories,
   usersAdmin = [],
+  onCategoriesUpdate,
+  onRefresh,
 }: {
   data: Report[]
   categories?: Category[]
   usersAdmin?: UserAdmin[]
+  onCategoriesUpdate?: () => void | Promise<void>
+  onRefresh?: () => void | Promise<void>
 }) {
   const [data, setData] = React.useState(() => initialData)
+  const [isRefreshing, setIsRefreshing] = React.useState(false)
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -352,6 +334,16 @@ export function DataTable({
     () => data?.map(({ id_report }) => id_report) || [],
     [data],
   )
+
+  const handleRefresh = React.useCallback(async () => {
+    if (!onRefresh) return
+    setIsRefreshing(true)
+    try {
+      await onRefresh()
+    } finally {
+      setIsRefreshing(false)
+    }
+  }, [onRefresh])
 
   const table = useReactTable({
     data,
@@ -415,10 +407,12 @@ export function DataTable({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="reports">Reportes</SelectItem>
-            <SelectItem value="categories">Categorías</SelectItem>
 
             {isConfigPermission && (
-              <SelectItem value="users">Usuarios</SelectItem>
+              <>
+                <SelectItem value="categories">Categorías</SelectItem>
+                <SelectItem value="users">Usuarios</SelectItem>
+              </>
             )}
 
             <SelectItem value="past-performance">
@@ -445,12 +439,28 @@ export function DataTable({
           </TabsTrigger>
         </TabsList>
 
-        {isConfigPermission && (
-          <div className="flex items-center gap-2">
-            {/* Add category */}
-            <AddCategory />
-          </div>
-        )}
+        {/* Recargar datos */}
+        <div className="flex items-center gap-4">
+          {onRefresh && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="ml-auto"
+            >
+              <IconRefresh className={isRefreshing ? 'animate-spin' : ''} />
+              <span className="hidden lg:inline">Actualizar datos</span>
+            </Button>
+          )}
+
+          {isConfigPermission && (
+            <div className="flex items-center gap-2">
+              {/* Add category */}
+              <AddCategory />
+            </div>
+          )}
+        </div>
       </div>
       <TabsContent
         value="reports"
@@ -529,14 +539,12 @@ export function DataTable({
               {/* Ordenar por fecha */}
               <Select
                 value={
-                  sorting[0]?.id === 'fecha'
-                    ? sorting[0]?.desc
-                      ? 'desc'
-                      : 'asc'
-                    : 'default'
+                  sorting[0]?.id === 'fecha' && sorting[0]?.desc
+                    ? 'desc'
+                    : 'asc'
                 }
                 onValueChange={(value) => {
-                  if (value === 'default') {
+                  if (value === 'asc') {
                     setSorting([])
                   } else {
                     setSorting([{ id: 'fecha', desc: value === 'desc' }])
@@ -547,7 +555,6 @@ export function DataTable({
                   <SelectValue placeholder="Ordenar por fecha" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="default">Sin ordenar</SelectItem>
                   <SelectItem value="desc">Más reciente</SelectItem>
                   <SelectItem value="asc">Más antigua</SelectItem>
                 </SelectContent>
@@ -720,7 +727,7 @@ export function DataTable({
         </div>
       </TabsContent>
       <TabsContent value="categories">
-        <CategoriesTable data={categories} />
+        <CategoriesTable data={categories} onUpdate={onCategoriesUpdate} />
       </TabsContent>
 
       {isConfigPermission && (

@@ -70,7 +70,7 @@ import {
 } from '@/components/ui/table'
 import { authService } from '@/lib/auth'
 import type { Category } from '@/types/category'
-import { Check, Edit, Trash2, X } from 'lucide-react'
+import { Edit, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Input } from './ui/input'
 
@@ -95,23 +95,13 @@ function DragHandle({ id }: { id: number }) {
 }
 
 interface ColumnsProps {
-  editingId: number | null
-  editValue: string
   onEdit: (id: number, currentValue: string) => void
-  onSave: (id: number) => void
-  onCancel: () => void
   onDelete: (id: number) => void
-  onInputChange: (value: string) => void
 }
 
 const createColumns = ({
-  editingId,
-  editValue,
   onEdit,
-  onSave,
-  onCancel,
   onDelete,
-  onInputChange,
 }: ColumnsProps): ColumnDef<Category>[] => [
   {
     id: 'drag',
@@ -155,43 +145,12 @@ const createColumns = ({
   {
     accessorKey: 'category',
     header: 'Categoría',
-    cell: ({ row }) => {
-      const isEditing = editingId === row.original.id_category
-      return (
-        <Input
-          id={`category-${row.original.id_category}`}
-          value={isEditing ? editValue : row.original.category}
-          onChange={(e) => isEditing && onInputChange(e.target.value)}
-          disabled={!isEditing}
-          className="disabled:opacity-100 disabled:cursor-default"
-        />
-      )
-    },
+    cell: ({ row }) => <p className="font-medium">{row.original.category}</p>,
   },
   {
     id: 'actions',
+    header: 'Acciones',
     cell: ({ row }) => {
-      const isEditing = editingId === row.original.id_category
-
-      if (isEditing) {
-        return (
-          <div className="flex gap-2">
-            <Button
-              size="icon"
-              variant="default"
-              onClick={() => onSave(row.original.id_category)}
-            >
-              <Check className="size-4" />
-              <span className="sr-only">Guardar cambios</span>
-            </Button>
-            <Button size="icon" variant="ghost" onClick={onCancel}>
-              <X className="size-4" />
-              <span className="sr-only">Cancelar edición</span>
-            </Button>
-          </div>
-        )
-      }
-
       return (
         <div className="flex gap-2">
           <Button
@@ -246,10 +205,13 @@ function DraggableRow({ row }: { row: Row<Category> }) {
 
 export default function CategoriesTable({
   data: initialData,
+  onUpdate,
 }: {
   data?: Category[]
+  onUpdate?: () => void | Promise<void>
 }) {
   const [data, setData] = React.useState<Category[]>(() => initialData || [])
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false)
   const [editingId, setEditingId] = React.useState<number | null>(null)
   const [editValue, setEditValue] = React.useState<string>('')
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
@@ -274,6 +236,13 @@ export default function CategoriesTable({
     useSensor(KeyboardSensor, {}),
   )
 
+  // Sincronizar con datos externos cuando cambien
+  React.useEffect(() => {
+    if (initialData) {
+      setData(initialData)
+    }
+  }, [initialData])
+
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => data?.map(({ id_category }) => id_category) || [],
     [data],
@@ -282,40 +251,47 @@ export default function CategoriesTable({
   const handleEdit = React.useCallback((id: number, currentValue: string) => {
     setEditingId(id)
     setEditValue(currentValue)
+    setEditDialogOpen(true)
   }, [])
 
-  const handleSave = React.useCallback(
-    async (id: number) => {
-      if (!editValue.trim()) {
-        toast.error('El nombre de la categoría no puede estar vacío')
-        return
-      }
+  const handleSave = React.useCallback(async () => {
+    if (!editValue.trim()) {
+      toast.error('El nombre de la categoría no puede estar vacío')
+      return
+    }
 
-      try {
-        await authService.updateCategory(id, editValue.trim())
-        setData((prevData) =>
-          prevData.map((item) =>
-            item.id_category === id
-              ? { ...item, category: editValue.trim() }
-              : item,
-          ),
-        )
-        setEditingId(null)
-        setEditValue('')
-        toast.success('Categoría actualizada correctamente')
-      } catch (error) {
-        console.error('Error al actualizar categoría:', error)
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : 'Error al actualizar la categoría',
-        )
+    if (editingId === null) return
+
+    try {
+      await authService.updateCategory(editingId, editValue.trim())
+      setData((prevData) =>
+        prevData.map((item) =>
+          item.id_category === editingId
+            ? { ...item, category: editValue.trim() }
+            : item,
+        ),
+      )
+      setEditDialogOpen(false)
+      setEditingId(null)
+      setEditValue('')
+      toast.success('Categoría actualizada correctamente')
+
+      // Recargar datos si se proporciona la función
+      if (onUpdate) {
+        await onUpdate()
       }
-    },
-    [editValue],
-  )
+    } catch (error) {
+      console.error('Error al actualizar categoría:', error)
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Error al actualizar la categoría',
+      )
+    }
+  }, [editValue, editingId, onUpdate])
 
   const handleCancel = React.useCallback(() => {
+    setEditDialogOpen(false)
     setEditingId(null)
     setEditValue('')
   }, [])
@@ -347,30 +323,13 @@ export default function CategoriesTable({
     }
   }, [categoryToDelete])
 
-  const handleInputChange = React.useCallback((value: string) => {
-    setEditValue(value)
-  }, [])
-
   const columns = React.useMemo(
     () =>
       createColumns({
-        editingId,
-        editValue,
         onEdit: handleEdit,
-        onSave: handleSave,
-        onCancel: handleCancel,
         onDelete: handleDelete,
-        onInputChange: handleInputChange,
       }),
-    [
-      editingId,
-      editValue,
-      handleEdit,
-      handleSave,
-      handleCancel,
-      handleDelete,
-      handleInputChange,
-    ],
+    [handleEdit, handleDelete],
   )
 
   const table = useReactTable({
@@ -547,6 +506,39 @@ export default function CategoriesTable({
           </div>
         </div>
       </div>
+
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar categoría</DialogTitle>
+            <DialogDescription>
+              Modifica el nombre de la categoría
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="edit-category">Nombre de la categoría</Label>
+              <Input
+                id="edit-category"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                placeholder="Ingresa el nombre de la categoría"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSave()
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancel}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSave}>Guardar cambios</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>

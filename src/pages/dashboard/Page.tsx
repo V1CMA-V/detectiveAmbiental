@@ -19,30 +19,38 @@ export default function Page() {
 
   const isConfigPermission = hasConfigPermission()
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        setLoading(true)
-        const data = await authService.getAllReports()
-
-        const categories = await authService.getAllCategories()
-
-        setReports(data)
-        setCategories(categories)
-
-        // Cargar usuarios solo si tiene permiso de configuración
-        if (isConfigPermission) {
-          const users = await authService.getAdminUsers()
-          setUsersAdmin(users)
-        }
-      } catch (error) {
-        console.error('Error fetching reports:', error)
-      } finally {
-        setLoading(false)
-      }
+  const fetchCategories = async () => {
+    try {
+      const categories = await authService.getAllCategories()
+      setCategories(categories)
+    } catch (error) {
+      console.error('Error fetching categories:', error)
     }
+  }
 
-    fetchReports()
+  const fetchAllData = async () => {
+    try {
+      setLoading(true)
+      const data = await authService.getAllReports()
+
+      await fetchCategories()
+
+      setReports(data)
+
+      // Cargar usuarios solo si tiene permiso de configuración
+      if (isConfigPermission) {
+        const users = await authService.getAdminUsers()
+        setUsersAdmin(users)
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchAllData()
   }, [isConfigPermission])
 
   if (loading) {
@@ -59,6 +67,8 @@ export default function Page() {
         data={reports}
         categories={categories}
         usersAdmin={usersAdmin}
+        onCategoriesUpdate={fetchCategories}
+        onRefresh={fetchAllData}
       />
     </>
   )
