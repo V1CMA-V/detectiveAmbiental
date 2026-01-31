@@ -8,7 +8,7 @@ import type { Category } from '@/types/category'
 import type { Report } from '@/types/report'
 import type { UserAdmin } from '@/types/user'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export default function Page() {
   const [reports, setReports] = useState<Report[]>([])
@@ -28,7 +28,7 @@ export default function Page() {
     }
   }
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     try {
       setLoading(true)
       const data = await authService.getAllReports()
@@ -47,11 +47,11 @@ export default function Page() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isConfigPermission])
 
   useEffect(() => {
     fetchAllData()
-  }, [isConfigPermission])
+  }, [fetchAllData])
 
   if (loading) {
     return <DashboardSkeleton />
